@@ -1,6 +1,7 @@
 package com.learningjunit.unittestsample.bookstoread;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("A bookshelf")
+@ExtendWith(BooksParameterResolver.class)
 public class BookShelfTest {
 
     private BookShelf shelf;
@@ -23,29 +25,26 @@ public class BookShelfTest {
     private Book codeComplete;
     private Book mythicalManMonth;
     private Book cleanCode;
+    private Book refactoring;
 
     @BeforeEach
-    void init() throws Exception {
+    void init(Map<String, Book> books) {
         shelf = new BookShelf();
-        effectiveJava = new Book("Effective Java", "Joshua Bloch",
-                LocalDate.of(2008, Month.MAY, 8));
-        codeComplete = new Book("Code Complete", "Steve McConnel",
-                LocalDate.of(2004, Month.JUNE, 9));
-        mythicalManMonth = new Book("The Mythical Man-Month",
-                "Frederick Phillips Brooks",
-                LocalDate.of(1975, Month.JANUARY, 1));
-        cleanCode = new Book("Clean Code",
-                "Robert C. Martin",
-                LocalDate.of(2008, Month.AUGUST, 1));
+        this.effectiveJava = books.get("Effective Java");
+        this.codeComplete = books.get("Code Complete");
+        this.mythicalManMonth = books.get("The Mythical Man-Month");
+        this.cleanCode = books.get("Clean Code");
+        this.refactoring = books.get("Refactoring: Improving the Design of Existing Code");
     }
 
 
-    private BookShelfTest(TestInfo testInfo) {
-        System.out.println("Working on test " + testInfo.getDisplayName());
-    }
+//    private BookShelfTest(TestInfo testInfo) {
+//        System.out.println("Working on test " + testInfo.getDisplayName());
+//    }
 
     @Nested
     @DisplayName("is empty")
+    @ExtendWith(BooksParameterResolver.class)
     class isEmpty{
 
         @Test
@@ -133,7 +132,11 @@ public class BookShelfTest {
             List<Book> books = shelf.arrange(reversed);
             assertThat(books).isSortedAccordingTo(reversed);
         }
+    }
 
+    @Nested
+    @DisplayName("books are grouped by")
+    class groupedBy {
         @Test
         @DisplayName("books inside bookshelf are grouped by publication year")
         void groupBooksInsideBookShelfByPublicationYear() {
